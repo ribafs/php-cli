@@ -1,0 +1,14 @@
+
+Erros trabalhosos
+
+if($x = 3)
+
+Trabalhoso de perceber. if é uma comparação, que pode ser true ou false e acima estamos atribuindo, que sempre será true.
+
+Algo também trabalhoso é o retorno de algumas funções/comandos, que adicionam um espaço ao retorno. Então usar
+
+trim($retorno)
+
+Para garantir que não venha com espaços, nem na esquerda nem na direita.
+
+

@@ -1,0 +1,33 @@
+
+Platform-specific CLI tools
+
+WP-CLI - http://wp-cli.org/ e https://github.com/wp-cli/
+
+Laravel Artisan - https://laravel.com/docs/8.x/artisan
+
+Drush - http://www.drush.org/en/master/ e https://github.com/drush-ops/drush/
+
+Joomlatools Console - https://www.joomlatools.com/developer/tools/console/ e https://github.com/joomlatools/joomlatools-console
+
+CakePHP - Bake  cria aplicativos completos na linha de comando - https://github.com/cakephp/bake
+
+Symfony Console Component - http://symfony.com/doc/current/components/console/introduction.html
+
+Yii - https://www.yiiframework.com/doc/guide/2.0/en/tutorial-console
+
+Codeigniter - https://codeigniter.com/userguide3/general/cli.html
+
+FuelPHP - https://fuelphp.com/docs/packages/oil/console.html
+
+Phalcon - https://docs.phalcon.io/4.0/pt-br/api/phalcon_cli
+
+Slim - https://github.com/slimphp/Slim-Console
+
+PHPixie - https://github.com/PHPixie/Console
+
+OctoberCMS - https://octobercms.com/docs/console/development
+
+PHP-CLI Tools - https://github.com/wp-cli/php-cli-tools
+
+CLImate - https://climate.thephpleague.com/
+

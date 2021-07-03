@@ -1,0 +1,164 @@
+#!/usr/bin/php
+<?php
+
+use PhpSchool\CliMenu\CliMenu;
+use PhpSchool\CliMenu\Builder\CliMenuBuilder;
+use PhpSchool\CliMenu\Style\SelectableStyle;
+
+require_once 'vendor/autoload.php';
+
+function os() {
+   return (stripos(PHP_OS, "WIN") === 0)? "DOS" : "UNIX";
+}
+
+$os = os();
+if($os == 'WIN') {
+    print 'O sistema oepracional não suporta a extensão posix, que é requisito para o php-cli menu';
+    exit;
+}
+
+$os = os();
+if($os == 'WIN') {
+    system("cls");
+}else{
+    system("clear");
+}
+
+echo "
+            |  _ \(_) |__   __ _ _ __ ___   __ _ _ __  |  ___/ ___| 
+            | |_) | | '_ \ / _` | '_ ` _ \ / _` | '__| | |_  \___ \ 
+            |  _ <| | |_) | (_| | | | | | | (_| | |    |  _|  ___) |
+            |_| \_\_|_.__/ \__,_|_| |_| |_|\__,_|_|    |_|   |____/ 
+
+                    \_|_)                             | | 
+                      |     __,   ,_    __,        _  | | 
+                     _|    /  |  /  |  /  |  |  |_|/  |/  
+                    (/\___/\_/|_/   |_/\_/|_/ \/  |__/|__/
+                              Criado com figlet";
+
+echo "\n\n\n\t\t\tTecle enter para continuar\n";
+$pasta = fgets(STDIN);
+
+$laravel8 = function (CliMenu $menu) {
+    $menu->close();
+    echo "\nInstalar laravel 8 em qual pasta?\n";
+    $pasta = trim(fgets(STDIN));
+    system("composer create-project --prefer-dist laravel/laravel:^8.0 $pasta");
+    echo "\nInstalação concluída. Precisa acessar o diretório $pasta\n";
+    exit(0);
+};
+
+$laravel7 = function (CliMenu $menu) {
+    $menu->close();
+    echo "\nInstalar laravel 7 em qual pasta?\n";
+    $pasta = trim(fgets(STDIN));
+    system("composer create-project --prefer-dist laravel/laravel:^7.0 $pasta");
+    echo "\nInstalação concluída. Precisa acessar o diretório $pasta\n";
+    exit(0);
+};
+
+$laravel6 = function (CliMenu $menu) {
+    $menu->close();
+    echo "\nInstalar laravel 6 em qual pasta?\n";
+    $pasta = trim(fgets(STDIN));
+    system("composer create-project --prefer-dist laravel/laravel:^6.0 $pasta");
+    echo "\nInstalação concluída. Precisa acessar o diretório $pasta\n";
+    exit(0);
+};
+
+$laravel58 = function (CliMenu $menu) {
+    $menu->close();
+    echo "Instalar laravel 5.8 em qual pasta?\n";
+    $pasta = trim(fgets(STDIN));
+    system("composer create-project --prefer-dist laravel/laravel:^5.8 $pasta");
+    echo "\nInstalação concluída. Precisa acessar o diretório $pasta\n";
+    exit(0);
+};
+
+$auth8 = function (CliMenu $menu) {
+    $menu->close();
+    echo "\nImplementando autenticação no laravel 8 da pasta atual\n";
+    auth8();
+    exit(0);
+};
+
+$clear = function (CliMenu $menu) {
+    $menu->close();
+    echo "\nLimpar o cache do laravel na pasta atual\n";
+    chearCache();
+    exit(0);
+};
+
+$backup = function (CliMenu $menu) {
+    $menu->close();
+    echo "\nBackup de um banco do mysql\n";
+    backupDb();
+    exit(0);
+};
+
+$menu = (new CliMenuBuilder)
+    ->setTitle('Utilitários Laravel')
+    ->addItem('Instalar Laravel 8', $laravel8)
+    ->addItem('Instalar Laravel 7', $laravel7)
+    ->addItem('Instalar Laravel 6', $laravel6)
+    ->addItem('Instalar Laravel 5.8', $laravel58)
+    ->addItem('Autenticação para o Laravel 8 neste diretório', $auth8)
+    ->addItem('Limpar cache do laravel', $clear)
+    ->addItem('Backup de banco do MySQL', $backup)
+    ->addLineBreak('-')
+    ->setBorder(1, 2, 'yellow')
+    ->setPadding(2, 4)
+    ->setMarginAuto()
+    ->build();
+$menu->open();
+
+$os = os();
+if($os == 'WIN') {
+    system("cls");
+}else{
+    system("clear");
+}
+
+function auth8(){
+    echo 'Aguarde a implementação da autenticação no Laravel 8 na pasta atual...';
+    echo PHP_EOL;
+    exec('composer require laravel/jetstream');
+    echo PHP_EOL;
+    echo "Digite sua escolha: livewire/inertia";
+    $front = fgets(STDIN);
+    exec('php artisan jetstream:install '.$front);
+    exec('npm install && npm run dev');
+    exec('npm audit fix');
+    echo PHP_EOL;
+    echo 'Autenticação com '.$front.' implementada no Laravel 8';
+    echo PHP_EOL;
+}
+
+function clearCache(){
+    system('php artisan view:clear');
+    system('php artisan cache:clear');
+    system('php artisan route:clear');
+    system('php artisan route:cache');
+    system('php artisan config:cache');
+    system('php artisan optimize');
+    system('composer du');
+}
+
+function backupDb(){
+    echo 'O backup será feito na pasta atual: bk.sql';
+    echo PHP_EOL;        
+    $filename = 'backup-'.date('Y-m-d_H-i').'.sql';
+    echo "Nome do banco de dados?\n";
+    $db = trim(fgets(STDIN));
+    echo "Nome do usuário?\n";
+    $user = trim(fgets(STDIN));
+    echo "Senha?\n";
+    $pass = trim(fgets(STDIN));
+
+    try {
+        system("mysqldump -u $user -p$pass $db > $filename");
+    } catch (\Exception $e) {
+        echo 'mysqldump-php error: ' . $e->getMessage();
+    }
+}
+

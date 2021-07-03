@@ -1,0 +1,54 @@
+Variáveis de ambiente
+
+$apiKey = getenv('API_KEY');
+
+// It wasn't provided via environment variable.
+if (! $apiKey && ! empty($argv[1])) {
+$apiKey = $argv[1];
+}
+
+// Neither environment nor argument.
+if (! $apiKey) {
+echo 'An API key must be provided!';
+exit(1);
+}
+
+echo "API Key: $apiKey"
+
+API_KEY=abc123 php my-script.php
+API Key: abc123
+$ php my-script.php xyz789
+API Key: xyz789
+$ API_KEY=abc123 php my-script.php xyz789
+API Key: abc123
+
+
+<?php
+/**
+ * Interacting with system environment variables
+ *
+ * ## Usage
+ *
+ * Pass a name using the DEMO_NAME environment variable:
+ *
+ *   DEMO_NAME=Steve php EnvExample.php
+ *
+ * If the DEMO_NAME is empty, the script will think you're Fred.
+ *
+ * @link http://us3.php.net/manual/en/function.getenv.php
+ */
+
+$name = getenv('DEMO_NAME');
+
+if ($name) {
+	printf('Hey, I recognize you, %s!' . PHP_EOL, $name);
+	$name = sprintf('My old friend, %s!', $name);
+
+} else {
+	echo "I don't know you, so I'll just call you Fred." . PHP_EOL;
+	$name = 'Fred';
+}
+
+// Update DEMO_NAME and call the system's echo program.
+putenv('DEMO_NAME=' . $name);
+passthru('echo $DEMO_NAME');

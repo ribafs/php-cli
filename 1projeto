@@ -1,0 +1,27 @@
+PHP-CLI
+
+Criar repositório php-cli
+Criar documentação com mkdocs
+
+- Introdução
+- O que é o PHP-CLI?
+- Algumas diferenças entre o PHP para a web e o PHP para a linha de comando
+- Exemplos de código
+- Opções do PHP-CLI
+- Argc e Argv
+- STDIN, STDOUT, STDERR
+- Algumas funções nativas do PHP
+- Executando comandos do sistema operacional via PHP
+- Criação de Menus para o terminal
+- Vantagens/talentos do PHP-CLI
+- Úteis:
+    cli-menu
+    console
+    colors
+- Algumas Funções
+- Algumas Classes
+    - laravel-cli
+    - utils-cli
+    - ...
+- Unicode
+

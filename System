@@ -1,0 +1,21 @@
+system — Executa um programa externo e mostra a saída
+
+ system ( string $command , int &$return_var = ? ) : string
+
+<?php
+echo '<pre>';
+
+// Mostra todo o resultado do comando do shell "ls", e retorna
+// a última linha da saída em $last_line. Guarda o valor de retorno do comando shell em $retval.
+$last_line = system('ls', $retval);
+
+// Criar pasta teste no raiz
+//$last_line = system('sudo mkdir /teste', $retval);
+
+// Mostrando informação adicional
+echo '
+</pre>
+<hr />Última linha da saída: '.$last_line.'
+<hr />Valor de Retorno: '.$retval;
+
+

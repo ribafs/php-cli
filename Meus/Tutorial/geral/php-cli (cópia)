@@ -1,0 +1,116 @@
+<?php
+    require_once 'Colors.php';
+    require_once 'config.php';
+/*
+Foreground = black, dark_gray,blue,light_blue,green,light_green,cyan,light_cyan,red,light_red,purple,light_purple,brown,yellow,light_gray,white
+Background = black,red,green,yellow,blue,magenta,cyan,light_gray
+*/
+
+    /**
+     * Classe helper para PHP-CLI
+     * Métodos públicos estáticos para facilitar o uso
+     * @author Ribamar FS <ribafs@gmail.com>
+     */
+class Cli
+{
+    const BR = PHP_EOL;
+    const WIDTH = WID - 1; // Ajuste de acordo com seu monitor
+
+    public static function brSpaces($nr)
+    {
+        $sp = '';
+        for($x=0;$x<$nr;$x++){
+            $sp .= ' ';
+        }
+        return $sp;
+    }
+
+    private static function so(){
+        return (stripos(PHP_OS, "WIN") === 0)? "DOS" : "UNIX";
+    }
+
+    public static function charsLen($str)
+    {
+        return strlen($str);
+    }
+
+    public static function strBr($str)
+    {
+        return $msg.self::BR;
+    }
+
+    public static function str($str)
+    {
+        return $msg;
+    }
+
+    // Retornar uma string numa certa posição, em termos de caracteres
+    public static function stringPos($str, $position=40)
+    {
+        $sp = '';
+        for($x=0;$x<$position;$x++){
+            $sp .= ' ';
+        }
+        $ret = $sp.$str."\n";
+        return $ret;
+    }
+
+    // Adicionar espaços em branco
+    public static function whiteSpc($position)
+    {
+        $sp = '';
+        for($x=0;$x<$position;$x++){
+            $sp .= ' ';
+        }
+        $ret = $sp;
+        return $ret;
+    }
+
+    public function menuTitle($title = 'Menu principal',$fgColor = 'black', $bgColor = 'yellow')
+    {
+    	$colors = new Colors();
+        $wt = (self::WIDTH - strlen($title))/2; 
+        if(self::so() == 'UNIX'){
+            $title = $colors->getColoredString($title, $fgColor, $bgColor); 
+        }
+        return $title;
+    }
+
+    public function menu($title = 'Menu principal',array $items, $fgColor = 'black', $bgColor = 'yellow')
+    {        
+    	$colors = new Colors();
+
+        $wt = (self::WIDTH - strlen($title))/2; 
+        system('clear');
+        if(self::so() == 'UNIX'){
+            print self::whiteSpc($wt-4).self::menuTitle('Título principal', 'white', 'blue')."\n";
+        }else{
+            print self::stringPos('     '.$title, $wt);
+        }
+        print "\n";
+        $max = '';
+        foreach($items as $key => $item){
+            $len = strlen($item);
+            $max = max($max, $len);
+        }
+
+        foreach($items as $key => $item)
+        {
+            $dif = $max - strlen($item);
+            $item = $item.self::whiteSpc($dif);
+            $key = $key +1;            
+            
+            $len = strlen($item);
+            $wi = (self::WIDTH - strlen($item))/2;
+
+            if(self::so() == 'UNIX'){
+                print self::stringPos($colors->getColoredString(self::whiteSpc(40).$key, $fgColor, $bgColor) . $colors->getColoredString(' - ', $fgColor, $bgColor) . $colors->getColoredString($item, $fgColor, $bgColor),$wi);
+            }else{
+                print self::stringPos($key. '-' .$item,$wi);
+
+            }
+        }
+        print "\n\n";
+    }
+
+}

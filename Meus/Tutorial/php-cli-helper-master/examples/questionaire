@@ -1,0 +1,19 @@
+#!/usr/bin/php
+<?php
+    require dirname(__FILE__).'/../CLI.php';
+    CLI::setLogFile(dirname(__FILE__).'/cli-logging.log');
+
+    CLI::out();
+    $answer = CLI::loopIn('Welcome how are you?', array('good', 'bad'));
+    if ($answer == 'bad')
+        CLI::out('O well, I\'ll let you rest then.', true, true);
+
+    CLI::out("Great! Lets move on then.");
+    $answer = CLI::loopIn("What's your favorite OS?", array('Mac', 'Windows'));
+    if ($answer == 'Windows')
+        CLI::out("O, i'm not feeling to good, we'll have to stop.", true, true);
+
+    CLI::out("Macs are pretty cool.");
+
+    CLI::out("Well its bedtime i'll see you around.");
+?>

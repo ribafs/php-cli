@@ -1,0 +1,77 @@
+getopt() - Obtém opções da lista de argumentos da linha de comando. Facilita o parser de argumentos
+
+https://www.php.net/manual/en/function.getopt.php
+getopt — Obtém opções da lista de argumentos da linha de comando
+
+
+Descrição ¶
+getopt ( string $options [, array $longopts ] ) : array
+
+Retorna uma matriz associativa das opções/argumentos baseada no formato especificado no parâmetro options, ou false em caso de erro.
+Parâmetros ¶
+
+options
+
+    O parâmetro options deve conter os seguintes elementos: caracteres individuais, e caracteres individuais seguidos por dois pontos para indicar uma opção com um argumento a seguir. Por exemplo, a string de opção x reconhece uma opção -x, e uma string de opção x: reconhece uma opção e um argumento -x argumento. Não importa se o argumento tem espaço no início.
+longopts
+
+Valor Retornado ¶
+
+Esta função irá retornar uma matriz de opções/argumentos . Se uma opção não tiver argumento o valor definido será false.
+
+
+getopt.php 
+
+var_dump(
+    getopt("ab:c::", ["delta", "epsilon:", "zeta::"])
+);
+
+php getopt.php -a -a -bbeta -b beta -cgamma --delta --epsilon --zeta --zeta=f  -c gamma
+
+
+#!/usr/bin/php
+
+// a single colon indicates the option takes a value
+// a double colon indicates the value may be omitted
+$shortopts = "hf:v::d";
+// GNU-style long options are not required
+$longopts = ["help", "version"];
+$opts = getopt($shortopts, $longopts);
+
+// options without values are assigned a value of boolean false
+// you must check their existence, not their truthiness
+if (isset($opts["h"]) || isset($opts["help"])) {
+    fprintf(STDERR, "Here is some help!\n");
+    exit;
+}
+
+// options with optional values must be called like "-v5" or "-v=5"
+$verbosity = 0;
+if (isset($opts["v"])) {
+    $verbosity = ($opts["v"] === false) ? 1 : (int)$opts["v"];
+}
+fprintf(STDOUT, "Verbosity is %d" . PHP_EOL, $verbosity);
+
+// options called multiple times are passed as an array
+$debug = 0;
+if (isset($opts["d"])) {
+    $debug = is_array($opts["d"]) ? count($opts["d"]) : 1;
+}
+fprintf(STDOUT, "Debug is %d" . PHP_EOL, $debug);
+
+// there is no automated way for getopt to handle unexpected options
+
+op.php
+
+#!/usr/bin/env php
+<?php
+$options = array();
+for ($i=1; $i < $argc; $i=$i+2) {
+$key = $argv[$i];
+$value = $argv[$i+1];
+$options[$key] = $value;
+}
+print_r($options);
+
+op.php s f
+

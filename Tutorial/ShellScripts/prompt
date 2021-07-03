@@ -1,0 +1,59 @@
+Hide
+
+read -s PASSWORD
+
+echo $PASSWORD
+
+unset password;
+while IFS= read -r -s -n1 pass; do
+  if [[ -z $pass ]]; then
+     echo
+     break
+  else
+     echo -n '*'
+     password+=$pass
+  fi
+done
+
+Without being fancy
+
+echo "Please enter your username";
+read username;
+
+echo "Please enter your password";
+stty -echo
+read password;
+stty echo
+
+
+#!/usr/bin/env bash
+
+password=''
+while IFS= read -r -s -n1 char; do
+  [[ -z $char ]] && { printf '\n'; break; } # ENTER pressed; output \n and break.
+  if [[ $char == $'\x7f' ]]; then # backspace was pressed
+      # Remove last char from output variable.
+      [[ -n $password ]] && password=${password%?}
+      # Erase '*' to the left.
+      printf '\b \b' 
+  else
+    # Add typed char to output variable.
+    password+=$char
+    # Print '*' in its stead.
+    printf '*'
+  fi
+done
+
+
+password=''
+while IFS= read -r -s -n1 pass; do
+  if [ -z "$pass" ]; then
+     echo
+     break
+  else
+     printf '*'
+     password="$password$pass"
+  fi
+done
+
+

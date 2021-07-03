@@ -1,0 +1,156 @@
+<?php
+    require_once 'Colors.php';
+/*
+Foreground = black, dark_gray,blue,light_blue,green,light_green,cyan,light_cyan,red,light_red,purple,light_purple,brown,yellow,light_gray,white
+Background = black,red,green,yellow,blue,magenta,cyan,light_gray
+*/
+
+    /**
+     * Classe helper para PHP-CLI
+     * Métodos públicos estáticos para facilitar o uso
+     * @author Ribamar FS <ribafs@gmail.com>
+     */
+class Cli
+{
+    const BR = PHP_EOL;
+
+    public static function brSpaces($nr)
+    {
+        $sp = '';
+        for($x=0;$x<$nr;$x++){
+            $sp .= ' ';
+        }
+        return $sp;
+    }
+
+    private static function so(){
+        return (stripos(PHP_OS, "WIN") === 0)? "DOS" : "UNIX";
+    }
+
+    public static function charsMenuWin($nr)
+    {
+        $sp = '';
+        for($x=0;$x<$nr;$x++){
+            $sp .= '=';
+        }
+        return $sp;
+    }
+
+    public static function strBr($str)
+    {
+        return $msg.self::BR;
+    }
+
+    public static function str($str)
+    {
+        return $msg;
+    }
+
+    // Retornar uma string numa certa posição, em termos de caracteres
+    public static function stringPos($str, $position=40)
+    {
+        $sp = '';
+        for($x=0;$x<$position;$x++){
+            $sp .= ' ';
+        }
+        $ret = $sp.$str."\n";
+        return $ret;
+    }
+
+    // Adicionar espaços em branco
+    public static function whiteSpc($position)
+    {
+        $sp = '';
+        for($x=0;$x<$position;$x++){
+            $sp .= ' ';
+        }
+        $ret = $sp;
+        return $ret;
+    }
+
+    public function menu($title = 'Menu principal',array $items, $fgColor = 'white', $bgColor = 'green')
+    {        
+    	$colors = new Colors();
+
+        $wt = (80 - strlen($title))/2; 
+        system('clear');
+        if(self::so() == 'UNIX'){
+            print self::whiteSpc($wt).self::menuTitle('Título principal', 'white', 'blue')."\n";
+        }else{
+            print self::stringPos('     '.$title, $wt);
+        }
+        print "\n";
+        $max = '';
+        foreach($items as $key => $item){
+            $len = strlen($item);
+            $max = max($max, $len);
+        }
+
+        foreach($items as $key => $item)
+        {
+            $dif = $max - strlen($item)+40;
+            $keyitem = '  ['.$key.'] - '.$item.self::whiteSpc($dif);
+            $posX = (40 - strlen($keyitem))/2;
+
+            if(self::so() == 'UNIX'){
+                print self::whiteSpc(20).self::stringPos($colors->getColoredString($keyitem, $fgColor, $bgColor),$posX);
+            }else{
+                print self::stringPos($key. '-' .$item,$wi);
+
+            }
+        }
+        print "\n\n".self::whiteSpc(20)."Entre o número da sua opção \n\n";
+        system("read n");
+    }
+
+    public function menuWin($title = 'Menu principal',array $items)
+    {        
+        $wt = (40 - strlen($title))/2; 
+        system('clear');
+        print self::whiteSpc(15).self::charsMenuWin($wt).$title.self::charsMenuWin($wt)."\n";
+
+        print "\n";
+        $max = '';
+        foreach($items as $key => $item){
+            $len = strlen($item);
+            $max = max($max, $len);
+        }
+
+        foreach($items as $key => $item)
+        {
+            $dif = $max - strlen($item)+40;
+            $keyitem = '  ['.$key.'] - '.$item.self::whiteSpc($dif);
+            $posX = (80 - strlen($keyitem))/2;
+
+            print self::stringPos($keyitem, $posX);
+        }
+        print "\n\n".self::whiteSpc(15)."Entre o número da sua opção \n\n";
+        system("read n");
+    }
+
+    public static function auth8(){
+        echo 'Aguarde a implementação da autenticação no Laravel 8 na pasta atual...';
+        echo PHP_EOL;
+        exec('composer require laravel/jetstream');
+        echo PHP_EOL;
+        echo "Digite sua escolha: livewire/inertia";
+        $front = fgets(STDIN);
+        exec('php artisan jetstream:install '.$front);
+        exec('npm install && npm run dev');
+        exec('npm audit fix');
+        echo PHP_EOL;
+        echo 'Autenticação com '.$front.' implementada no Laravel 8';
+        echo PHP_EOL;
+    }
+
+    public static function clearCache(){
+        system('php artisan view:clear');
+        system('php artisan cache:clear');
+        system('php artisan route:clear');
+        system('php artisan route:cache');
+        system('php artisan config:cache');
+        system('php artisan optimize');
+        system('composer du');
+    }
+
+}

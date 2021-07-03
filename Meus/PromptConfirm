@@ -1,0 +1,32 @@
+echo "Are you sure you want to do this?  Type 'yes' to continue: ";
+$handle = fopen ("php://stdin","r");
+$line = fgets($handle);
+if(trim($line) != 'yes'){
+    echo "ABORTING!\n";
+    exit;
+}
+fclose($handle);
+echo "\n"; 
+echo "Thank you, continuing...\n";
+
+$message   =  "Are you sure you want to do this [y/N]";
+print $message;
+$confirmation  =  trim( fgets( STDIN ) );
+if ( $confirmation !== 'y' ) {
+   // The user did not say 'y'.
+   exit (0);
+}else{
+    print 'OK';
+}
+
+ou
+
+echo 'Continue? [y/n] ';
+ 
+if (!in_array(trim(fgets(STDIN)), array('y', 'Y'))) {
+    echo 'Stopped' . "\n";
+    exit;
+}
+ 
+echo 'Continuing' . "\n";
+

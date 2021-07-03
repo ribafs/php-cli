@@ -1,0 +1,7 @@
+Daemons - são processos que rodam continuamente em segundo plano
+
+while ( $run ) {
+// do something!
+}
+
+

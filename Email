@@ -1,0 +1,9 @@
+<?php
+// emailme.php
+// establish "from" user (optional)
+ini_set("sendmail_from","sender@example.org");
+
+// Parameters: recipient, subject, body
+mail("alan@alanseiden.com", "Sent from CL", "CL can call PHP scripts.");
+
+

@@ -1,0 +1,85 @@
+# Funções para execução de comandos do sistema operacional
+
+https://www.php.net/manual/pt_BR/book.exec.php
+
+## exec() - Retorna a última linha de saída como uma string.
+
+<?php
+// outputs the username that owns the running php/httpd process
+// (on a system with the "whoami" executable in the path)
+$output=null;
+$retval=null;
+exec('whoami', $output, $retval);
+echo "Returned with status $retval and output:\n";
+print_r($output);
+?>
+
+O comando exec() é semelhante a shell_exec(), exceto que retorna a última linha da saída e, opcionalmente, preenche uma matriz com a saída completa do comando, junto com o código de erro. A Listagem 8 é um exemplo do que acontece se você executar exec () sem capturar os resultados em um dado array.
+
+<?php
+$results = exec('wc -w *.txt | head -5');
+echo $results;
+
+#would print out just the last line or results, i.e.:
+#3847 myfile.txt
+
+
+## system() - Limpe o padrão de saída após cada linha.
+
+echo '<pre>';
+
+// Mostra todo o resultado do comando do shell "ls", e retorna
+// a última linha da saída em $last_line. Guarda o valor de retorno
+// do comando shell em $retval.
+$last_line = system('ls', $retval);
+
+// Mostrando informação adicional
+echo '
+</pre>
+<hr />Última linha da saída: '.$last_line.'
+<hr />Valor de Retorno: '.$retval;
+
+system()
+
+O comando system() é uma espécie de híbrido. Como passthru (), ele produz tudo o que recebe diretamente do programa externo. Como exec (), ele também retorna a última linha e disponibiliza o código de retorno.
+
+<?php
+system('wc -w *.txt | head -5');
+
+## shell_exec () - O comando shell_exec() é na verdade apenas um alias para o operador crase (`).
+
+echo 'Running `shell_exec(\'ls -a\')`...' . PHP_EOL;
+
+$ls = shell_exec('ls -a');
+echo $ls . PHP_EOL;
+
+
+Exemplo
+
+#! /bin/sh
+number_of_words=`wc -w *.txt`
+echo $number_of_words
+
+#result would be something like:
+#165 readme.txt 388 results.txt 588 summary.txt
+#and so on....
+
+O mesmo exemplo com shell_exec()
+
+<?php
+$results = shell_exec('wc -w *.txt');
+echo $results;
+
+
+## passthru() - Retorna a saída bruta. Ótimo para trabalhar com binários arquivos ou saída interativa!
+
+passar através()
+
+O comando passthru() permite que você execute um programa externo e exiba seus resultados na tela. Você não precisa usar echo ou return para ver esses resultados; eles simplesmente são exibidos no navegador. Vocês pode adicionar um argumento opcional, uma variável que contém o código de retorno do programa externo, como 0 para sucesso, que fornece um mecanismo melhor para depuração.
+
+<?php
+passthru('wc -w *.txt | head -5',$returnval);
+echo "<hr/>".$returnval;
+
+
+

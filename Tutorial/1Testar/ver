@@ -1,0 +1,8 @@
+    $_borderVisibility = array(
+        'top'    => true,
+        'right'  => true,
+        'bottom' => true,
+        'left'   => true,
+        'inner'  => true
+    );
+

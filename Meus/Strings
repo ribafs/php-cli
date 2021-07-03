@@ -1,0 +1,44 @@
+# Algumas funções para strings
+
+explode - Split a string by a string
+fprintf
+implode - Join array elements with a string
+lcfirst
+ltrim
+number_format
+printf
+rtrim
+sprintf
+str_contains — Determine if a string contains a given substring
+str_ends_with — Checks if a string ends with a given substring
+str_ireplace — Case-insensitive version of str_replace
+str_pad — Pad a string to a certain length with another string
+str_repeat — Repeat a string
+str_replace — Replace all occurrences of the search string with the replacement string
+str_split — Convert a string to an array
+str_starts_with — Checks if a string starts with a given substring
+str_word_count — Return information about words used in a string
+stripos — Find the position of the first occurrence of a case-insensitive substring in a string
+strlen — Get string length
+strpbrk — Search a string for any of a set of characters
+strpos — Find the position of the first occurrence of a substring in a string
+strrchr — Find the last occurrence of a character in a string
+strrev — Reverse a string
+strripos — Find the position of the last occurrence of a case-insensitive substring in a string
+strrpos — Find the position of the last occurrence of a substring in a string
+strspn — Finds the length of the initial segment of a string consisting entirely of characters contained within a given mask
+strstr — Find the first occurrence of a string
+strtolower — Make a string lowercase
+strtoupper — Make a string uppercase
+substr_count — Count the number of substring occurrences
+substr_replace — Replace text within a portion of a string
+substr — Return part of a string
+trim — Strip whitespace (or other characters) from the beginning and end of a string
+ucfirst — Make a string's first character uppercase
+ucwords — Uppercase the first character of each word in a string
+vfprintf — Write a formatted string to a stream
+vprintf — Output a formatted string
+vsprintf — Return a formatted string
+wordwrap — Wraps a string to a given number of characters
+preg_replace — Realiza uma pesquisa por uma expressão regular e a substitui.
+

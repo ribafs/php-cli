@@ -1,0 +1,115 @@
+A maneira como saímos dos scripts é importante
+
+0 = successful
+1 = error
+2-255 = special meaning
+Will always use last exit code
+
+
+<?php
+/**
+ * Demonstrate common exit codes.
+ *
+ * ## Usage
+ *
+ * If you pass any arguments, the script will exit with a code of 1.
+ * Otherwise, the script will exit with 0.
+ *
+ *   # Will print "0".
+ *   php ExitCodeExample.php && echo $?
+ *
+ *   # Will exit with "1".
+ *   php ExitCodeExample.php foo bar
+ *
+ * @link http://us3.php.net/manual/en/function.getenv.php
+ */
+
+// If we receive any arguments, exit with a status of 1.
+$code = 1 < $argc ? 1 : 0;
+
+printf('Exiting with a code of %d' . PHP_EOL, $code);
+
+exit($code);
+
+
+if (! isset($argv['1'])) {
+    echo "Missing required argument!";
+    exit(1);
+}
+
+echo "Script ran!";
+$ php my-script.php foo && echo "Success"
+> Script ran!
+> Success
+
+$ php my-script.php && echo "You will never see this"
+> Missing required argument!
+
+
+Exit code, ou return code de um processo é um número inteiro que é passado do processo filho para o processo pai quando o processo filho termina sua execução.
+O número deve ser entre 0-255, ao forçar um número fora desse intervalo o comportamento é intermitente;
+● 0 é considerado sucesso;
+● Qualquer número maior que 0 é considerado erro;
+● O programador pode/deve documentar os tipos de erro por número.
+
+exit() - resposta certa
+exit(1) - resposta errada
+exit('Erro') - resposta errada
+
+<?php
+#!/usr/bin/php
+
+$ret = readline("Isto está correto (s/n)?");
+
+if ($ret === "n") {
+    exit('Não'.PHP_EOL);
+} else {
+    exit(); // ou exit(0)
+}
+
+
+* @exits code
+*  1 : failed
+*  2 : not ready
+
+http://tldp.org/LDP/abs/html/exitcodes.html
+https://www.redhat.com/sysadmin/exit-codes-demystified
+
+Exit status 0
+
+An exit status of 0 is the best possible scenario, generally speaking. It tells you that your latest command or script executed successfully. Success is relative because the exit code only informs you that the script or command executed fine, but the exit code doesn't tell you whether the information from it has any value. Examples will better illustrate what I'm describing.
+
+Exit status 1
+
+Although the command's output looks as though everything went well, if you scroll up you will see several "Permission denied" errors in the listing. These errors result in an exit status of 1, which is described as "impermissible operations." Although you might expect that a "Permission denied" error leads to an exit status of 1, you'd be wrong, as you will see in the next section. 
+
+Dividing by zero, however, gives you an exit status of 1. You also receive an error from the shell to let you know that the operation you're performing is "impermissible:"
+
+Exit status 2
+
+As stated above, a shell warning of "Permission denied" results in an exit status of 2 rather than 1. 
+
+Exit status 2 appears when there's a permissions problem or a missing keyword in a command or script. A missing keyword example is forgetting to add a done in a script's do loop. The best method for script debugging with this exit status is to issue your command in an interactive shell to see the errors you receive. This method generally reveals where the problem is.
+
+Permissions problems are a little less difficult to decipher and debug than other types of problems. The only thing "Permission denied" means is that your command or script is attempting to violate a permission restriction.
+Exit status 126
+
+Exit status 126 is an interesting permissions error code. The easiest way to demonstrate when this code appears is to create a script file and forget to give that file execute permission
+
+Exit status 127
+
+Exit status 127 tells you that one of two things has happened: Either the command doesn't exist, or the command isn't in your path ($PATH). This code also appears if you attempt to execute a command that is in your current working directory.
+
+Exit status 128
+
+Exit status 128 is the response received when an out-of-range exit code is used in programming. From my experience, exit status 128 is not possible to produce. I have tried multiple actions for an example, and I can't make it happen. However, I can produce an exit status 128-adjacent code. If your exit code exceeds 256, the exit status returned is your exit code subtracted by 256. This result sounds odd and can actually create an incorrect exit status
+
+Exit status 130
+
+If you're running a program or script and press Ctrl-C to stop it, your exit status is 130.
+
+Exit status 255
+
+This final reserved exit status is easy to produce but difficult to interpret. The documentation that I've found states that you receive exit status 255 if you use an exit code that's out of the range 0-255.
+
+

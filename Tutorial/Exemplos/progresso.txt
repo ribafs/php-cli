@@ -1,0 +1,64 @@
+Barra de progresso com porcentagem
+
+fwrite(	STDOUT,	"\0337"	);	//	Save Position
+for($i = 0;$i<=100;$i+=5)	
+  {
+  fwrite(STDOUT,"\0338"	."{$i}%	Complete");	
+  //	Restore	Position	and	Write	Percentage
+ 	
+  usleep(100000	);
+}
+fwrite(	STDOUT,	PHP_EOL	);
+
+
+function progressBar($done, $total) {
+    $perc = floor(($done / $total) * 100);
+    $left = 100 - $perc;
+    $write = sprintf("\033[0G\033[2K[%'={$perc}s>%-{$left}s] - $perc%% - $done/$total", "", "");
+    fwrite(STDERR, $write);
+}
+
+progressBar(50,100);
+
+ @ob_start();
+
+ $shell = system("tput cols");
+
+ @ob_end_clean();
+
+ for( $i= 0 ; $i < $shell ; $i++ ){
+    echo "█"; usleep(1000);
+ } 
+
+Muito legal
+
+$iloop = "0"; /* Outside the loop */
+while (true){
+  $warn = "Program running hold on!!\r";
+  if (strlen($warn) === $iloop+1){
+    $iloop = "0";
+  }
+  $warn = str_split($warn);
+  $iloop++;
+  $warn[$iloop] = "\033[35;2m\e[0m".strtoupper($warn[$iloop]);
+  echo " \033[7m".implode($warn);
+  usleep(90000);
+}
+
+Ainda melhor
+
+$iloop = "0"; /* Outside the loop */
+while (true){
+for ($i=0;$i<=109;$i++){
+  $warn = "Program running hold on!!\r";
+  if (strlen($warn) === $iloop+1){
+    $iloop = "0";
+  }
+  $warn = str_split($warn);
+  $iloop++;
+  $warn[$iloop] = "\033[$i;7m".strtoupper($warn[$iloop]);
+  echo " \033[7m".implode($warn);
+  usleep(90000);
+}}
+
+

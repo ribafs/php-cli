@@ -1,0 +1,102 @@
+# readline
+
+Suporte somente para unix
+
+// Input section 
+// $a = 10 
+$a = (int)readline('Enter an integer: '); 
+  
+// $b = 9.78 
+$b = (float)readline('Enter a floating point number: '); 
+  
+// Entered integer is 10 and 
+// entered float is 9.78 
+echo "Entered integer is " . $a 
+    . " and entered float is " . $b; 
+
+
+filter_none
+
+brightness_4
+<?php 
+   
+// Input 10 20 
+list($var1, $var2) = explode(' ', readline()); 
+   
+// Typecasting to integers 
+$var1 = (int)$var1; 
+$var2 = (int)$var2; 
+   
+// Printing the sum of var1 and var2. 
+// The sum of 10 and 20 is 30 
+echo "The sum of " . $var1 . " and " . $var2 . " is " . ($var1 + $var2); 
+
+// For input 
+// 1 2 3 4 5 6 
+$arr = explode(' ', readline()); 
+  
+// For output 
+print_r($arr); 
+
+
+#!/usr/bin/php
+<?php
+$user = readline("Limpar a tela? [limpar] | Sair [s]: ");
+
+if ($user === "limpar"){ system("clear"); }
+
+if ($user === "s"){ exit; }
+
+echo "\nValeu!\n";
+
+Since PHP has a built-in unix only function readline() to do exactly that, here leaving the following notes.
+
+We can use and hold the result of readline into a var.
+
+#!/usr/bin/php
+<?php
+$user = readline("List dir [l] | Say hello [h] | exit [q]: ");
+
+if ($user === "l"){ system("ls"); }
+
+if ($user === "h"){ echo "Hello!"; }
+
+if ($user === "q"){ exit; }
+
+echo "\nThanks!";
+
+Example output:
+
+l ls result
+
+h «hello»
+
+q exit
+
+ctrl+c exit.
+
+ctrl+d with empty input, continue to the next sequence. «Thanks». $user is defined and empty, no error.
+
+ctrl+d with some input: No action. Still waiting for input.
+
+ctrl+m Continue and take the current input in $user.
+
+ctrl+j Continue and take the current input in $user, same behavior as ctrl+m.
+
+Return continue to the next sequence «Thanks». $user can stay empty, no error.
+
+ctrl+z may be used to cancel a loop and move to the top one. $user will be unset if the var is not defined in this scope.
+
+Depending input, we can define empty values using!empty or do more surgical testings (the readline response can be many chars).
+
+$user can be tested with !isset if not yet asked.
+
+There is also the built-in readline_add_history() to store the user input into an object, where values can be retrieved directly by their name (Nice for code clarity):
+
+readline_add_history($user);
+print_r(readline_list_history());
+print_r(readline_user());
+
+Very useful to build real complex stuffs!
+
+http://php.net/manual/en/function.readline.php

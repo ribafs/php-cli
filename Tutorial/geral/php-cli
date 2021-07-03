@@ -1,0 +1,187 @@
+<?php
+    require_once 'Colors.php';
+/*
+Foreground = black, dark_gray,blue,light_blue,green,light_green,cyan,light_cyan,red,light_red,purple,light_purple,brown,yellow,light_gray,white
+Background = black,red,green,yellow,blue,magenta,cyan,light_gray
+*/
+
+    /**
+     * Classe helper para PHP-CLI
+     * Métodos públicos estáticos para facilitar o uso
+     * @author Ribamar FS <ribafs@gmail.com>
+     */
+class Cli
+{
+    //PHP_EOL;
+
+    // Char cheio
+    public static function charUTF8Hor($char='▀', $nr) // ▀ 	▁ 	▂ 	▃ 	▄ 	▅ 	▆ 	▇ 	█ 	▉ 	▊ 	▋ 	▌ 	▍ 	▎ 	▏
+    {
+        $bar = '';
+        for($x=0;$x<$nr;$x++){
+            $bar .= $char;
+        }
+        return $bar.PHP_EOL;
+    }
+
+    // Char vazado
+    public static function charUTF82Hor($char='▐', $nr) // ▐ 	░ 	▒ 	▓ 	▔ 	▕ 	▖ 	▗ 	▘ 	▙ 	▚ 	▛ 	▜ 	▝ 	▞ 	▟
+    {
+        $bar = '';
+        for($x=0;$x<$nr;$x++){
+            $bar .= $char;
+        }
+        return $bar.PHP_EOL;
+    }
+    public static function brSpaces($nr)
+    {
+        $sp = '';
+        for($x=0;$x<$nr;$x++){
+            $sp .= ' ';
+        }
+        return $sp;
+    }
+
+    private static function so(){
+        return (stripos(PHP_OS, "WIN") === 0)? "DOS" : "UNIX";
+    }
+
+    private static function msgColor($msg, $colors, $fg='black', $bg='green')
+    {
+        print PHP_EOL;
+        $msg = $colors->getColoredString($msg, $fg, $bg).PHP_EOL.PHP_EOL;
+        return $msg;
+    }
+
+    public static function charsMenuWin($nr)
+    {
+        $sp = '';
+        for($x=0;$x<$nr;$x++){
+            $sp .= '=';
+        }
+        return $sp;
+    }
+
+    // Mensagens: warning, danger, info
+    public static function warning($msg,$colors)
+    {
+        $war = $colors->getColoredString($msg, 'black', 'yellow').PHP_EOL;
+        return $war;
+    }
+
+    public static function danger($msg,$colors)
+    {
+        $war = $colors->getColoredString($msg, 'white', 'red').PHP_EOL;
+        return $war;
+    }
+
+    public static function info($msg,$colors)
+    {
+        $war = $colors->getColoredString($msg, 'white', 'black').PHP_EOL;
+        return $war;
+    }
+
+    // Retornar uma string numa certa posição, em termos de caracteres
+    public static function stringPos($str, $position=40)
+    {
+        $sp = '';
+        for($x=0;$x<$position;$x++){
+            $sp .= ' ';
+        }
+        $ret = $sp.$str."\n";
+        return $ret;
+    }
+
+    // Adicionar espaços em branco
+    public static function whiteSpc($nr)
+    {
+        $sp = '';
+        for($x=0;$x<$nr;$x++){
+            $sp .= ' ';
+        }
+        $ret = $sp;
+        return $ret;
+    }
+
+    public function menu($title = 'Menu principal',array $items, $fgColor = 'white', $bgColor = 'green')
+    {        
+    	$colors = new Colors();
+        print self::msgColor('Alerta',$colors);exit;
+        $wt = (80 - strlen($title))/2; 
+        system('clear');
+        if(self::so() == 'UNIX'){
+            print self::whiteSpc($wt).$colors->getColoredString($title, 'white', 'blue').PHP_EOL;
+        }else{
+            print self::stringPos('     '.$title, $wt);
+        }
+        print "\n";
+        $max = '';
+        foreach($items as $key => $item){
+            $len = strlen($item);
+            $max = max($max, $len);
+        }
+
+        foreach($items as $key => $item)
+        {
+            $dif = $max - strlen($item)+20;
+            $key ++;
+            $keyitem = '  ['.$key.'] - '.$item.self::whiteSpc($dif);
+            $posX = (40 - strlen($keyitem))/2;
+
+            if(self::so() == 'UNIX'){
+                print self::whiteSpc(20).self::stringPos($colors->getColoredString($keyitem, $fgColor, $bgColor),$posX);
+            }else{
+                print self::stringPos($key. '-' .$item,$wi);
+
+            }
+        }
+        print "\n\n".self::whiteSpc(20)."Entre o número da sua opção \n\n";
+        $menu = trim(fgets(STDIN));
+
+        if($menu == 1) self::backupDb();
+
+    }
+
+    public function menuWin($title = 'Menu principal',array $items)
+    {        
+        $wt = (40 - strlen($title))/2; 
+        system('clear');
+        print self::whiteSpc(15).self::charsMenuWin($wt).$title.self::charsMenuWin($wt)."\n";
+
+        print "\n";
+        $max = '';
+        foreach($items as $key => $item){
+            $len = strlen($item);
+            $max = max($max, $len);
+        }
+
+        foreach($items as $key => $item)
+        {
+            $dif = $max - strlen($item)+40;
+            $keyitem = '  ['.$key.'] - '.$item.self::whiteSpc($dif);
+            $posX = (80 - strlen($keyitem))/2;
+
+            print self::stringPos($keyitem, $posX);
+        }
+        print "\n\n".self::whiteSpc(15)."Entre o número da sua opção \n\n";
+    }
+
+    private static function backupDb(){
+        echo 'O backup será feito na pasta atual: backup-data-hora.sql';
+        echo PHP_EOL;        
+        $filename = 'backup-'.date('Y-m-d_H-i').'.sql';
+        echo "Nome do banco de dados?\n";
+        $db = trim(fgets(STDIN));
+        echo "Nome do usuário?\n";
+        $user = trim(fgets(STDIN));
+        echo "Senha?\n";
+        $pass = trim(fgets(STDIN));
+
+        try {
+            system("mysqldump -u $user -p$pass $db > $filename");
+        } catch (\Exception $e) {
+            echo 'mysqldump-php error: ' . $e->getMessage();
+        }
+    }
+
+}

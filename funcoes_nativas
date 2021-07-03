@@ -1,0 +1,101 @@
+$file = 'people.txt';
+// Open the file to get existing content
+$current = file_get_contents($file);
+
+// Append a new person to the file
+$current .= "John Smith\n";
+
+// Write the contents back to the file
+file_put_contents($file, $current);
+
+$file = 'people.txt';
+// The new person to add to the file
+$person = "John Smith\n";
+// Write the contents to the file, 
+// using the FILE_APPEND flag to append the content to the end of the file
+// and the LOCK_EX flag to prevent anyone else writing to the file at the same time
+file_put_contents($file, $person, FILE_APPEND | LOCK_EX);// Se arquivo não existir será criado
+
+
+fgets
+
+#!/usr/bin/env php
+<?php
+echo "Digite o seu nome: ";
+$name = fgets(STDIN);
+print_r($name);
+
+
+
+str_pad
+
+(PHP 4 >= 4.0.1, PHP 5, PHP 7)
+
+str_pad — Preenche uma string para um certo tamanho com outra string
+Descrição ¶
+str_pad ( string $input , int $pad_length [, string $pad_string [, int $pad_type ]] ) : string
+
+Esta função retorna a string input preenchida na esquerda, direita ou ambos os lados até o tamanho especificado. Se o parâmetro opcional pad_string não for indicado, input é preenchido com espaços, se não é preenchido com os caracteres de pad_string até o limite.
+
+O parâmetro opcional pad_type pode ser STR_PAD_RIGHT (preencher a direita), STR_PAD_LEFT (preencher a esquerda), ou STR_PAD_BOTH (preencher de ambos os lados). If pad_type não for especificado é assumido que seja STR_PAD_RIGHT.
+
+Se o valor de pad_length é negativo ou menor do que o tamanho da string , não há nenhum preenchimento.
+
+Exemplo #1 Exemplo str_pad()
+
+<?php
+$input = "Alien";
+print str_pad($input, 10);                      // produz "Alien     "
+print str_pad($input, 10, "-=", STR_PAD_LEFT);  // produz "-=-=-Alien"
+print str_pad($input, 10, "_", STR_PAD_BOTH);   // produz "__Alien___"
+print str_pad($input, 6 , "___");               // produces "Alien_"
+?>
+
+    Nota:
+
+    O parâmetro pad_string será truncado se se o número de caracteres de prenchimento não puder ser dividido igualmente pelo tamanho do parâmetro pad_string.
+
+
+
+str_repeat
+
+(PHP 4, PHP 5, PHP 7)
+
+str_repeat — Repete uma string
+Descrição ¶
+str_repeat ( string $input , int $multiplier ) : string
+
+Retorna input repetida multiplier vezes.
+Parâmetros ¶
+
+input
+
+    A string a ser repetida.
+multiplier
+
+    Número de vezes que a string input será repetida.
+
+    multiplier deve ser maior ou igual a 0. Se o parâmetro multiplier for 0, a função irá retornar uma string vazia.
+
+Valor Retornado ¶
+
+Retorna a string repetida.
+Exemplos ¶
+
+Exemplo #1 Exemplo da str_repeat()
+<?php
+echo str_repeat("-=", 10);
+?>
+
+O exemplo acima irá imprimir:
+
+-=-=-=-=-=-=-=-=-=-=
+
+Veja Também ¶
+
+    for
+    str_pad() - Preenche uma string para um certo tamanho com outra string
+    substr_count() - Conta o número de ocorrências de uma substring
+
+
+

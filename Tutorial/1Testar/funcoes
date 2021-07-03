@@ -1,0 +1,227 @@
+<?php
+$descriptorspec = array(
+   0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+   1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+   2 => array("file", "/tmp/error-output.txt", "a") // stderr is a file to write to
+);
+
+$cwd = '/tmp';
+$env = array('some_option' => 'aeiou');
+
+$process = proc_open('php', $descriptorspec, $pipes, $cwd, $env);
+
+if (is_resource($process)) {
+    // $pipes now looks like this:
+    // 0 => writeable handle connected to child stdin
+    // 1 => readable handle connected to child stdout
+    // Any error output will be appended to /tmp/error-output.txt
+
+    fwrite($pipes[0], '<?php print_r($_ENV); ?>');
+    fclose($pipes[0]);
+
+    echo stream_get_contents($pipes[1]);
+    fclose($pipes[1]);
+
+    // It is important that you close any pipes before calling
+    // proc_close in order to avoid a deadlock
+    $return_value = proc_close($process);
+
+    echo "command returned $return_value\n";
+}
+?>
+
+<?php
+$outpipe = '/tmp/outpipe';
+$inpipe = '/tmp/inpipe';
+posix_mkfifo($inpipe, 0600);
+posix_mkfifo($outpipe, 0600);
+
+$pid = pcntl_fork();
+
+//parent
+if($pid) {
+    $in = fopen($inpipe, 'w');
+    fwrite($in, "A message for the inpipe reader\n");
+    fclose($in);
+   
+    $out = fopen($outpipe, 'r');
+    while(!feof($out)) {
+        echo "From out pipe: " . fgets($out) . PHP_EOL;
+    }
+    fclose($out);
+
+    pcntl_waitpid($pid, $status);
+   
+    if(pcntl_wifexited($status)) {
+        echo "Reliable exit code: " . pcntl_wexitstatus($status) . PHP_EOL;
+    }
+   
+    unlink($outpipe);
+    unlink($inpipe);
+}
+
+//child
+else {
+    //parent
+    if($pid = pcntl_fork()) {
+        pcntl_exec('/bin/sh', array('-c', "printf 'A message for the outpipe reader' > $outpipe 2>&1 && exit 12"));
+    }
+   
+    //child
+    else {
+        pcntl_exec('/bin/sh', array('-c', "printf 'From in pipe: '; cat $inpipe"));
+    }   
+}
+
+<?php
+/*
+ * Execute and display the output in real time (stdout + stderr).
+ *
+ * Please note this snippet is prepended with an appropriate shebang for the 
+ * CLI. You can re-use only the function.
+ * 
+ * Usage example:
+ * chmod u+x proc_open.php
+ * ./proc_open.php "ping -c 5 google.fr"; echo RetVal=$?
+ */
+define('BUF_SIZ', 1024);        # max buffer size
+define('FD_WRITE', 0);        # stdin
+define('FD_READ', 1);        # stdout
+define('FD_ERR', 2);        # stderr
+
+/*
+ * Wrapper for proc_*() functions.
+ * The first parameter $cmd is the command line to execute.
+ * Return the exit code of the process.
+ */
+function proc_exec($cmd)
+{
+    $descriptorspec = array(
+        0 => array("pipe", "r"),
+        1 => array("pipe", "w"),
+        2 => array("pipe", "w")
+    );
+
+    $ptr = proc_open($cmd, $descriptorspec, $pipes, NULL, $_ENV);
+    if (!is_resource($ptr))
+        return false;
+
+    while (($buffer = fgets($pipes[FD_READ], BUF_SIZ)) != NULL 
+            || ($errbuf = fgets($pipes[FD_ERR], BUF_SIZ)) != NULL) {
+        if (!isset($flag)) {
+            $pstatus = proc_get_status($ptr);
+            $first_exitcode = $pstatus["exitcode"];
+            $flag = true;
+        }
+        if (strlen($buffer))
+            echo $buffer;
+        if (strlen($errbuf))
+            echo "ERR: " . $errbuf;
+    }
+
+    foreach ($pipes as $pipe)
+        fclose($pipe);
+
+    /* Get the expected *exit* code to return the value */
+    $pstatus = proc_get_status($ptr);
+    if (!strlen($pstatus["exitcode"]) || $pstatus["running"]) {
+        /* we can trust the retval of proc_close() */
+        if ($pstatus["running"])
+            proc_terminate($ptr);
+        $ret = proc_close($ptr);
+    } else {
+        if ((($first_exitcode + 256) % 256) == 255 
+                && (($pstatus["exitcode"] + 256) % 256) != 255)
+            $ret = $pstatus["exitcode"];
+        elseif (!strlen($first_exitcode))
+            $ret = $pstatus["exitcode"];
+        elseif ((($first_exitcode + 256) % 256) != 255)
+            $ret = $first_exitcode;
+        else
+            $ret = 0; /* we "deduce" an EXIT_SUCCESS ;) */
+        proc_close($ptr);
+    }
+
+    return ($ret + 256) % 256;
+}
+
+/* __init__ */
+if (isset($argv) && count($argv) > 1 && !empty($argv[1])) {
+    if (($ret = proc_exec($argv[1])) === false)
+        die("Error: not enough FD or out of memory.\n");
+    elseif ($ret == 127)
+        die("Command not found (returned by sh).\n");
+    else
+        exit($ret);
+}
+?>
+
+<?php
+$read_output = $read_error = false;
+$buffer_len  = $prev_buffer_len = 0;
+$ms          = 10;
+$output      = '';
+$read_output = true;
+$error       = '';
+$read_error  = true;
+//stream_set_blocking($pipes[1], 0);
+//stream_set_blocking($pipes[2], 0);
+
+// dual reading of STDOUT and STDERR stops one full pipe blocking the other, because the external script is waiting
+while ($read_error != false or $read_output != false)
+{
+    if ($read_output != false)
+    {
+        if(feof($pipes[1]))
+        {
+            fclose($pipes[1]);
+            $read_output = false;
+        }
+        else
+        {
+            $str = fgets($pipes[1], 1024);
+            $len = strlen($str);
+            if ($len)
+            {
+                $output .= $str;
+                $buffer_len += $len;
+            }
+        }
+    }
+   
+    if ($read_error != false)
+    {
+        if(feof($pipes[2]))
+        {
+            fclose($pipes[2]);
+            $read_error = false;
+        }
+        else
+        {
+            $str = fgets($pipes[2], 1024);
+            $len = strlen($str);
+            if ($len)
+            {
+                $error .= $str;
+                $buffer_len += $len;
+            }
+        }
+    }
+   
+    if ($buffer_len > $prev_buffer_len)
+    {
+        $prev_buffer_len = $buffer_len;
+        $ms = 10;
+    }
+    else
+    {
+        usleep($ms * 1000); // sleep for $ms milliseconds
+        if ($ms < 160)
+        {
+            $ms = $ms * 2;
+        }
+    }
+}
+       
+return proc_close($process);
+?>

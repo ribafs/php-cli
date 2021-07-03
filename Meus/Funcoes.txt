@@ -1,0 +1,325 @@
+// Executar comando do SO
+
+// Executar comando do sistema operacional, usando a função system()
+function run($cmd) {
+    return system("$cmd 2>&1");
+}
+//run('tput cols');
+
+// Detectar se a execução do script está se dando por um navegador ou pela linha de comando
+function detectExecution(){
+    if (php_sapi_name() === 'cli') {
+        $ret = 'PHP-CLI'.PHP_EOL;
+    } else {
+        $ret = 'Navigator'.PHP_EOL;
+    }
+    return $ret;
+}
+// print detectExecution();
+
+	public function output($output){
+		$out = fopen('php://output', 'w');
+		fputs($out, $output);
+		fclose($out);
+	}
+
+	/**
+	 * @param string $string
+	 */
+	public function error($string){
+		$stdError = fopen('php://stderr', 'w');
+		fwrite($stdError, $string);
+		fclose($stdError);
+	}
+
+
+		/**
+		 * @return string
+		 * @throws ConsoleException
+		 */
+		public function getCurrentDirectory()
+		{
+			$cwd = getcwd();
+
+			if ($cwd === FALSE) {
+				throw new ConsoleException('CWD error');
+			}
+
+			return $cwd;
+		}
+
+
+Ocultar senha no windows
+
+function prompt($message = 'prompt: ', $hidden = false) {
+    if (PHP_SAPI !== 'cli') {
+        return false;
+    }
+    echo $message;
+    $ret = 
+        $hidden
+        ? exec(
+            PHP_OS === 'WINNT' || PHP_OS === 'WIN32'
+            ? __DIR__ . '\prompt_win.bat'
+            : 'read -s PW; echo $PW'
+        )
+        : rtrim(fgets(STDIN), PHP_EOL)
+    ;
+    if ($hidden) {
+        echo PHP_EOL;
+    }
+    return $ret;
+}
+
+function memory()
+{
+    $size = memory_get_usage(true);
+    $unit=array('b','kb','mb','gb','tb','pb');
+    return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
+}
+
+// As funções abaixo sobre memória foram encontradas no site oficial do PHP
+function echo_memory_usage() {
+        $mem_usage = memory_get_usage(true);
+       
+        if ($mem_usage < 1024)
+            echo $mem_usage." bytes";
+        elseif ($mem_usage < 1048576)
+            echo round($mem_usage/1024,2)." kilobytes";
+        else
+            echo round($mem_usage/1048576,2)." megabytes";
+           
+        echo "<br/>";
+    } 
+
+// Returns used memory (either in percent (without percent sign) or free and overall in bytes)
+    function getServerMemoryUsage($getPercentage=true)
+    {
+        $memoryTotal = null;
+        $memoryFree = null;
+
+        if (stristr(PHP_OS, "win")) {
+            // Get total physical memory (this is in bytes)
+            $cmd = "wmic ComputerSystem get TotalPhysicalMemory";
+            @exec($cmd, $outputTotalPhysicalMemory);
+
+            // Get free physical memory (this is in kibibytes!)
+            $cmd = "wmic OS get FreePhysicalMemory";
+            @exec($cmd, $outputFreePhysicalMemory);
+
+            if ($outputTotalPhysicalMemory && $outputFreePhysicalMemory) {
+                // Find total value
+                foreach ($outputTotalPhysicalMemory as $line) {
+                    if ($line && preg_match("/^[0-9]+\$/", $line)) {
+                        $memoryTotal = $line;
+                        break;
+                    }
+                }
+
+                // Find free value
+                foreach ($outputFreePhysicalMemory as $line) {
+                    if ($line && preg_match("/^[0-9]+\$/", $line)) {
+                        $memoryFree = $line;
+                        $memoryFree *= 1024;  // convert from kibibytes to bytes
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (is_readable("/proc/meminfo"))
+            {
+                $stats = @file_get_contents("/proc/meminfo");
+
+                if ($stats !== false) {
+                    // Separate lines
+                    $stats = str_replace(array("\r\n", "\n\r", "\r"), "\n", $stats);
+                    $stats = explode("\n", $stats);
+
+                    // Separate values and find correct lines for total and free mem
+                    foreach ($stats as $statLine) {
+                        $statLineData = explode(":", trim($statLine));
+
+                        //
+                        // Extract size (TODO: It seems that (at least) the two values for total and free memory have the unit "kB" always. Is this correct?
+                        //
+
+                        // Total memory
+                        if (count($statLineData) == 2 && trim($statLineData[0]) == "MemTotal") {
+                            $memoryTotal = trim($statLineData[1]);
+                            $memoryTotal = explode(" ", $memoryTotal);
+                            $memoryTotal = $memoryTotal[0];
+                            $memoryTotal *= 1024;  // convert from kibibytes to bytes
+                        }
+
+                        // Free memory
+                        if (count($statLineData) == 2 && trim($statLineData[0]) == "MemFree") {
+                            $memoryFree = trim($statLineData[1]);
+                            $memoryFree = explode(" ", $memoryFree);
+                            $memoryFree = $memoryFree[0];
+                            $memoryFree *= 1024;  // convert from kibibytes to bytes
+                        }
+                    }
+                }
+            }
+        }
+
+        if (is_null($memoryTotal) || is_null($memoryFree)) {
+            return null;
+        } else {
+            if ($getPercentage) {
+                return (100 - ($memoryFree * 100 / $memoryTotal));
+            } else {
+                return array(
+                    "total" => $memoryTotal,
+                    "free" => $memoryFree,
+                );
+            }
+        }
+    }
+
+    function getNiceFileSize($bytes, $binaryPrefix=true) {
+        if ($binaryPrefix) {
+            $unit=array('B','KiB','MiB','GiB','TiB','PiB');
+            if ($bytes==0) return '0 ' . $unit[0];
+            return @round($bytes/pow(1024,($i=floor(log($bytes,1024)))),2) .' '. (isset($unit[$i]) ? $unit[$i] : 'B');
+        } else {
+            $unit=array('B','KB','MB','GB','TB','PB');
+            if ($bytes==0) return '0 ' . $unit[0];
+            return @round($bytes/pow(1000,($i=floor(log($bytes,1000)))),2) .' '. (isset($unit[$i]) ? $unit[$i] : 'B');
+        }
+    }
+
+    // Memory usage: 4.55 GiB / 23.91 GiB (19.013557664178%)
+    $memUsage = getServerMemoryUsage(false);
+    echo sprintf("Memory usage: %s / %s (%s%%)",
+        getNiceFileSize($memUsage["total"] - $memUsage["free"]),
+        getNiceFileSize($memUsage["total"]),
+        getServerMemoryUsage(true)
+    );
+
+if( !function_exists('memory_get_usage') )
+{
+    function memory_get_usage()
+    {
+        if ( substr(PHP_OS,0,3) == 'WIN')
+        {
+               if ( substr( PHP_OS, 0, 3 ) == 'WIN' )
+                {
+                    $output = array();
+                    exec( 'tasklist /FI "PID eq ' . getmypid() . '" /FO LIST', $output );
+       
+                    return preg_replace( '/[\D]/', '', $output[5] ) * 1024;
+                }
+        }else{
+            $pid = getmypid();
+            exec("ps -eo%mem,rss,pid | grep $pid", $output);
+            $output = explode("  ", $output[0]);
+            return $output[1] * 1024;
+        }
+    }
+} 
+// https://www.php.net/manual/en/function.memory-get-usage.php
+print memory_get_usage();
+
+
+        /**
+         * Get input from a user
+         * 
+         * @param  string $message
+         * @return string 
+         */
+        function promptInput($message)
+        {
+            fwrite(STDOUT, "$message: ");
+            $input = trim(fgets(STDIN));
+            
+            return $input;
+        }
+
+promptInput('Msg');
+
+
+    // Retornar uma string numa certa posição, em termos de caracteres
+    public static function stringPos($str, $position=40)
+    {
+        $sp = '';
+        for($x=0;$x<$position;$x++){
+            $sp .= ' ';
+        }
+        $ret = $sp.$str."\n";
+        return $ret;
+    }
+
+
+function so(){
+    return (stripos(PHP_OS, "WIN") === 0)? "DOS" : "UNIX";
+}
+
+    public function runCommand($argv)
+    {
+        $name = "World";
+        if (isset($argv[1])) {
+            $name = $argv[1];
+        }
+    }
+
+function pause() {
+    $handle = fopen ("php://stdin","r");
+    do { $line = fgets($handle); } while ($line == '');
+    fclose($handle);
+    return $line;
+}
+
+pause(); // Aguarda teclar enter
+
+
+
+function isCLI() {
+    return (php_sapi_name() === 'cli' OR defined('STDIN'));
+}
+
+function userPrompt($message, $validator=null) {
+    if (!isCLI()) return null;
+
+    print($message);
+    $handle = fopen ('php://stdin','r');
+    $line = rtrim(fgets($handle), "\r\n");
+
+    if (is_callable($validator) && !call_user_func($validator, $line)) {
+        print("Invalid Entry.\r\n");
+        return userPrompt($message, $validator);
+    } else {
+        print("Continuing...\r\n");
+        return $line;
+    }
+}
+
+
+    function getOSInfo()
+    {
+        if (false == function_exists("shell_exec") || false == is_readable("/etc/os-release")) {
+            return null;
+        }
+
+        $os         = shell_exec('cat /etc/os-release');
+        $listIds    = preg_match_all('/.*=/', $os, $matchListIds);
+        $listIds    = $matchListIds[0];
+
+        $listVal    = preg_match_all('/=.*/', $os, $matchListVal);
+        $listVal    = $matchListVal[0];
+
+        array_walk($listIds, function(&$v, $k){
+            $v = strtolower(str_replace('=', '', $v));
+        });
+
+        array_walk($listVal, function(&$v, $k){
+            $v = preg_replace('/=|"/', '', $v);
+        });
+
+        return array_combine($listIds, $listVal);
+    }
+print_r(getOSInfo());
+
+

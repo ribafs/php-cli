@@ -1,0 +1,72 @@
+Criar scripts
+
+Primeira linha - #!/bin/sh
+
+Variáveis
+
+Definir
+
+my_var = 123
+
+Chamar
+
+echo $my_var
+
+echo "My_var value is $my_var"
+
+if-else
+
+if [ 35 -gt 45 ]
+then
+ echo "Greater"
+else
+ echo "Lesser"
+fi
+
+if [ 35 -gt 55 ]
+then
+ echo "Greater"
+elif [ 35 -gt 45 ]
+then
+ echo "Greater"
+else
+ echo "Lesser"
+fi
+
+Laço
+
+for i in 1 2 3 4 5
+do
+echo "Hello world $i"
+done
+
+while [ $i -le 5 ]
+do
+ echo "Hello world $i"
+ i=`expr $i + 1`
+done
+
+
+
+Função
+
+Definir
+
+nome_funcao() {
+ echo 'My first function'
+}
+
+Executar
+
+nome_funcao
+
+print_date()
+{
+echo "Today is `date +"%A %d %B %Y (%r)"`"
+return
+}
+
+Calling the above function
+print_date
+
+

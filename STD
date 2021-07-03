@@ -1,0 +1,220 @@
+STDIN - Entrada padrão de dados.
+STDOUT - Saída padrão de dados.
+STDOUT e STDERR - Para um usuário aparentemente não há diferença, mas para um programa há.
+
+STDIN = fopen("php://stdin", "r");
+STDOUT = fopen("php://stdout", "w");
+STDERR = fopen("php://stderr", "w");
+//The constants can be used anywhere a standard file handle would be:
+
+php://stdin (read)
+php://stdout (write)
+php://stderr (write)
+
+CLI specific Constants
+
+Constant    Description
+STDIN - An already opened stream to stdin. This saves opening it with 
+$stdin = fopen('php://stdin', 'r'); 
+
+STDOUT - An already opened stream to stdout. This saves opening it with 
+$stdout = fopen('php://stdout', 'w'); 
+
+STDERR - An already opened stream to stderr. This saves opening it with 
+$stderr = fopen('php://stderr', 'w'); 
+
+echo $prompt;
+$input = trim(fgets(fopen('php://stdin', 'r')));
+
+      Given the above, you don't need to open e.g. a stream for stderr yourself but simply use the constant instead of the stream resource: 
+php -r 'fwrite(STDERR, "stderr\n");' 
+      You do not need to explicitly close these streams, as they are closed automatically by PHP when your script ends. 
+    • The CLI SAPI does not change the current directory to the directory of the executed script! 
+      Example showing the difference to the CGI SAPI: 
+<?php
+    /* Our simple test application named test.php*/
+    echo getcwd(), "\n";
+?> 
+      
+
+STDOUT
+
+<?php
+$stdout = fopen('php://stdout', 'w');
+?>
+
+
+STDERR
+
+ Um stream já aberto com stderr. Isso evita ter que abri-lo com
+<?php
+$stderr = fopen('php://stderr', 'w');
+?>
+
+Como dito acima, você não precisa por exemplo abrir um stream para stderr por si mesmo, basta usar a constante ao invés do recurso do stream:
+
+php -r 'fwrite(STDERR, "stderr\n");'
+
+Você não precisa fechar explicitamente esses streams, já que eles serão automaticamente fechados pelo PHP quando o script terminar. 
+
+If you want the error messages sent by the php interpreter should go to the stderr-pipe, you must set display_errors to stderr
+
+Alternatively if you're using the commandline interface and you want to output the errors your own you can re-use the command-line nput/output streams:
+
+fwrite(STDERR, 'error message');
+
+Here STDERR is an already opened stream to stderr.
+
+Alternatively if you want to do it just for this script and not in CLI you can open a filed handler to php://stderr and write the error messages there.
+
+$fe = fopen('php://stderr', 'w');
+fwrite($fe, 'error message');
+
+fwrite(STDERR, "MySQL INSERT error on \"INSERT INTO files\" statement: " . mysql_error());
+
+https://www.php.net/manual/pt_BR/features.commandline.io-streams.php
+
+Um stream já aberto para o stdin. Isso evita ter que abri-lo com
+
+<?php
+$stdin = fopen('php://stdin', 'r');
+?>
+
+Exemplo
+
+fwrite(STDERR, 'Tem certeza (s/n): ');
+if(fread(STDIN, 1) == 's') {
+    fwrite(STDOUT, 'Sim!');
+}else{
+    fwrite(STDOUT, 'Não');
+}
+fwrite(STDOUT, PHP_EOL);
+
+
+Argumentos
+
+teste.php arg1 "arg 2" arg3
+
+
+<?php
+// Define STDIN to read data from PHP
+if(!defined("STDIN")) {
+define("STDIN", fopen('php://stdin','r'));
+}
+
+
+// Recebendo dois números como input e somando
+echo "Enter the value of a: ";
+$number1 = fread(STDIN,5);
+echo "Enter the value of b: ";
+$number2 = fread(STDIN,5);
+
+//Convert the string data to number and calculate sum
+$sum = (int)$number1 + (int)$number2;
+
+//Print the result of the summation
+printf("The sum of %d and %d is %d\n",$number1, $number2, $sum);
+
+
+echo "What is your favorite color?\n";
+//Take input from the user
+$color = fread(STDIN,10);
+//Print the input value
+printf("Your selected color is: %s\n",$color);
+
+
+#!/usr/bin/php
+
+while ($line = fgets(STDIN)) {// Espera a digitação e guarda o digitado em $line
+    $line = strtolower(trim($line));
+    switch ($line) {
+        case "bad":
+            fprintf(STDERR, "%s is bad" . PHP_EOL, $line);
+            break;
+        case "quit":
+            exit;
+        default:
+            fprintf(STDOUT, "%s is good" . PHP_EOL, $line);
+            break;
+    }
+}
+
+
+The builtin stream addresses referenced earlier (php://stdin, php://stdout, and php://stderr) can be used in place of filenames in most contexts:
+file_put_contents('php://stdout', 'This is stdout content');
+file_put_contents('php://stderr', 'This is stderr content');
+
+// Open handle and write multiple times.
+$stdout = fopen('php://stdout', 'w');
+
+fwrite($stdout, 'Hello world from stdout' . PHP_EOL);
+fwrite($stdout, 'Hello again');
+
+fclose($stdout);
+As an alternative, you can also use readline() for input, and you can also use echo or print or any other string printing functions for output.
+$name = readline("Please enter your name:");
+print "Hello, {$name}.";
+
+
+
+For capturing stdout and stderr, when you don't care about the intermediate files, I've had better results with . . .
+
+<?php
+function cmd_exec($cmd, &$stdout, &$stderr)
+{
+    $outfile = tempnam(".", "cmd");
+    $errfile = tempnam(".", "cmd");
+    $descriptorspec = array(
+        0 => array("pipe", "r"),
+        1 => array("file", $outfile, "w"),
+        2 => array("file", $errfile, "w")
+    );
+    $proc = proc_open($cmd, $descriptorspec, $pipes);
+   
+    if (!is_resource($proc)) return 255;
+
+    fclose($pipes[0]);    //Don't really want to give any input
+
+    $exit = proc_close($proc);
+    $stdout = file($outfile);
+    $stderr = file($errfile);
+
+    unlink($outfile);
+    unlink($errfile);
+    return $exit;
+}
+?>
+
+This isn't much different than a redirection, except it takes care of the temp files for you (you may need to change the directory from ".") and it blocks automatically due to the proc_close call.  This mimics the shell_exec behavior, plus gets you stderr.
+
+
+#!/usr/bin/php -q
+<?php
+if(!defined("STDIN")) {
+      define("STDIN", fopen('php://stdin','r'));
+print STDIN;
+}
+      echo "Hello! What is your name (enter below):\n";
+      $strName = fread(STDIN, 80); // Read up to 80 characters or a newline
+      echo 'Hello ' , $strName , "\n";
+
+
+fwrite(STDOUT, "Limpar a tela s/n?"); 
+// Read the input
+$resp = fgets(STDIN);
+// Artificialmente
+if(trim($resp) == 's') for ($i = 0; $i < 50; $i++) echo "\r\n";
+
+//ou com o comando clear
+if(trim($resp) == 's') system('clear');
+exit(0);
+
+
+fwrite(STDOUT, "Qual o seu nome?"); 
+// Read the input
+$nome = fgets(STDIN);
+fwrite(STDOUT, "Olá $nome");
+// Exit correctly
+exit(0);
+
+
